@@ -193,13 +193,13 @@ public:
                     WorldDatabase.PQuery("INSERT INTO lootcode_player (code, playerGUID, isUnique) VALUES ('%s', %u, %u);", (code), player->GetGUID(), isUnique);
 
                     // Add Item to player inventory
-                    if (itemId != NULL)
+                    if (itemId != 0)
                     {
                         player->AddItem(itemId, quantity);
                     }
 
                     // Add Gold to player inventory
-                    if (gold != NULL)
+                    if (gold != 0)
                     {
                         player->ModifyMoney(gold * 10000);
                     }
