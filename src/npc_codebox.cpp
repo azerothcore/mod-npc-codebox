@@ -78,6 +78,7 @@ player.
 
 */
 
+#include "Config.h"
 #include "ScriptMgr.h"
 
 bool CBAnnounceModule;
