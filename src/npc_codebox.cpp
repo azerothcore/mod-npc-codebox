@@ -78,7 +78,32 @@ player.
 
 */
 
-#include "Config.h"
+#include "ScriptMgr.h"
+#include "Player.h"
+#include "Configuration/Config.h"
+
+bool CBAnnounceModule = 1;
+
+class CodeboxConfig : public WorldScript
+{
+public:
+	CodeboxConfig() : WorldScript("CodeboxConfig") { }
+
+	void OnBeforeConfigLoad(bool reload) override
+    {
+		if (!reload) {
+			std::string conf_path = _CONF_DIR;
+			std::string cfg_file = conf_path + "/npc_codebox.conf";
+#ifdef WIN32
+			cfg_file = "npc_codebox.conf";
+#endif
+			std::string cfg_def_file = cfg_file + ".dist";
+			sConfigMgr->LoadMore(cfg_def_file.c_str());
+			sConfigMgr->LoadMore(cfg_file.c_str());
+			CBAnnounceModule = sConfigMgr->GetBoolDefault("CodeboxNPC.Announce", 1);
+		}
+	}
+};
 
 class CodeboxAnnounce : public PlayerScript
 {
@@ -87,13 +112,11 @@ public:
 
     CodeboxAnnounce() : PlayerScript("CodeboxAnnounce") {}
 
-    void OnLogin(Player* player)
+    void OnLogin(Player* player)  override
     {
-        // Announce Module
-        if (sConfigMgr->GetBoolDefault("CodeboxNPC.Announce", true))
-        {
-            ChatHandler(player->GetSession()).SendSysMessage("This server is running the |cff4CFF00CodeboxNPC |rmodule.");
-        }
+       	if (sConfigMgr->GetBoolDefault("CodeboxNPC.Announce", true)) {
+			ChatHandler(player->GetSession()).SendSysMessage("This server is running the |cff4CFF00CodeboxNPC |rmodule.");
+		}
     }
 };
 
@@ -265,6 +288,7 @@ public:
 
 void AddNPCCodeboxScripts()
 {
+    new CodeboxConfig();
     new CodeboxAnnounce();
     new codebox_npc();
 }
