@@ -93,7 +93,7 @@ player.
 
 */
 #include "Player.h"
-#include "ScripMgr.h"
+#include "ScriptMgr.h"
 #include "Config.h"
 #include "ScriptedGossip.h"
 #include "Chat.h"
