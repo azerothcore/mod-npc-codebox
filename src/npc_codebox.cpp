@@ -1100,5 +1100,4 @@ void AddNPCCodeboxScripts()
     new CodeboxConfig();
     new CodeboxAnnounce();
     new codebox_npc();
-    new Codebox_PassiveAI();
 }
