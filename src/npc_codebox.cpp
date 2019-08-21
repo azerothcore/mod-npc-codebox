@@ -92,9 +92,11 @@ player.
 - This code and content is released under the [GNU AGPL v3](https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3).
 
 */
-
+#include "Player.h"
+#include "ScriptMgr.h"
 #include "Config.h"
 #include "ScriptedGossip.h"
+#include "Chat.h"
 
 enum Customization {
     CUSTOMIZE_FACTION = 1,
@@ -146,7 +148,7 @@ std::unordered_map<uint32, uint32> lootid;
 class CodeboxConfig : public WorldScript
 {
 public:
-    CodeboxConfig() : WorldScript("CodeboxConfig_conf") { }
+    CodeboxConfig() : WorldScript("CodeboxConfig") { }
 
     void OnBeforeConfigLoad(bool reload) override
     {
