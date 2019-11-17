@@ -882,7 +882,7 @@ public:
 
                 // Get getLoot fields
                 Field * fields2 = getLoot->Fetch();
-                uint32 playerGUID = fields2[0].GetUInt32();
+                /* uint32 playerGUID = fields2[0].GetUInt32(); */ 
                 uint32 chargesUsed = fields2[1].GetUInt32();
 
                 // If the code is unqiue, check to see if anyone has already used it.
