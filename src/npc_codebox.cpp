@@ -99,6 +99,7 @@ player.
 #include "Chat.h"
 #include "ScriptedCreature.h"
 
+
 enum Customization {
     CUSTOMIZE_FACTION = 1,
     CUSTOMIZE_RACE,
