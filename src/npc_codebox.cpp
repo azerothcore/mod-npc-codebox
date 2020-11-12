@@ -97,6 +97,7 @@ player.
 #include "Config.h"
 #include "ScriptedGossip.h"
 #include "Chat.h"
+#include "ScriptedCreature.h"
 
 enum Customization {
     CUSTOMIZE_FACTION = 1,
