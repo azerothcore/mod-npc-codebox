@@ -154,15 +154,6 @@ public:
     void OnBeforeConfigLoad(bool reload) override
     {
         if (!reload) {
-            std::string conf_path = _CONF_DIR;
-            std::string cfg_file = conf_path + "/npc_codebox.conf";
-#ifdef WIN32
-            cfg_file = "npc_codebox.conf";
-#endif
-            std::string cfg_def_file = cfg_file + ".dist";
-            sConfigMgr->LoadMore(cfg_def_file.c_str());
-            sConfigMgr->LoadMore(cfg_file.c_str());
-
             CodeboxAnnounceModule = sConfigMgr->GetBoolDefault("Codebox.Announce", true);
             CodeboxMessageTimer = sConfigMgr->GetIntDefault("Codebox.MessageTimer", 60000);
 
