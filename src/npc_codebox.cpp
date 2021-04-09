@@ -140,11 +140,11 @@ uint32 max_loot_results = 9;
 bool CodeboxAnnounceModule;
 typedef std::unordered_map<uint32, ShowLootElements> ShowLoot_Pair;
 
-std::unordered_map<uint32, DeleteLootElements>DelLoot;
-std::unordered_map<uint32, LootElements>AddLoot;
-std::unordered_map<uint32, ShowLoot_Pair> ShowLoot;
-std::unordered_map<uint32, uint32> editid;
-std::unordered_map<uint32, uint32> lootid;
+std::unordered_map<ObjectGuid, DeleteLootElements>DelLoot;
+std::unordered_map<ObjectGuid, LootElements>AddLoot;
+std::unordered_map<ObjectGuid, ShowLoot_Pair> ShowLoot;
+std::unordered_map<ObjectGuid, uint32> editid;
+std::unordered_map<ObjectGuid, uint32> lootid;
 
 class CodeboxConfig : public WorldScript
 {
@@ -216,7 +216,7 @@ public:
             getLoot(player, creature, code);
         }
 
-        uint32 guid = player->GetGUID();
+        ObjectGuid guid = player->GetGUID();
 
         if (action == 20)
         {
@@ -357,13 +357,14 @@ public:
         return true;
     }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) {
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+    {
         if (sender != GOSSIP_SENDER_MAIN)
         {
             return false;
         }
 
-        uint32 guid = player->GetGUID();
+        ObjectGuid guid = player->GetGUID();
 
         if (action == 25)
         {
@@ -730,7 +731,7 @@ public:
     {
         ClearGossipMenuFor(player);
 
-        uint32 guid = player->GetGUID();
+        ObjectGuid guid = player->GetGUID();
         std::string add_loot_text = "Enter Loot Code";
         char message[1024];
 
@@ -768,7 +769,7 @@ public:
 
         ClearGossipMenuFor(player);
 
-        uint32 guid = player->GetGUID();
+        ObjectGuid guid = player->GetGUID();
         std::string add_loot_text = "Enter Loot Code";
         char message[1024];
 
@@ -827,7 +828,7 @@ public:
         SendGossipMenuFor(player, CodeboxNPCID, creature->GetGUID());
     }
 
-    void initializeAddLoot(uint32 guid)
+    void initializeAddLoot(ObjectGuid guid)
     {
         lootid[guid] = 0;
         AddLoot[guid].itemId = 0;
@@ -845,7 +846,7 @@ public:
         QueryResult checkCode = WorldDatabase.PQuery("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '%s'", (code));
 
         // Check if player has redeemed the code
-        QueryResult getLoot = WorldDatabase.PQuery("SELECT playerGUID, count(code) AS chargesUsed FROM lootcode_player WHERE playerGUID like %u AND code = '%s'", player->GetGUID(), (code));
+        QueryResult getLoot = WorldDatabase.PQuery("SELECT playerGUID, count(code) AS chargesUsed FROM lootcode_player WHERE playerGUID like %u AND code = '%s'", player->GetGUID().GetCounter(), (code));
 
         do
         {
@@ -899,7 +900,7 @@ public:
                 if (chargesUsed < charges)
                 {
                     // Add the entry to the database
-                    WorldDatabase.PQuery("INSERT INTO lootcode_player (code, playerGUID, playerName, isUnique) VALUES ('%s', %u, '%s', %u);", (code), player->GetGUID(), player->GetName().c_str(), isUnique);
+                    WorldDatabase.PQuery("INSERT INTO lootcode_player (code, playerGUID, playerName, isUnique) VALUES ('%s', %u, '%s', %u);", (code), player->GetGUID().GetCounter(), player->GetName().c_str(), isUnique);
 
                     // Add Item to player inventory
                     if (itemId != 0)
@@ -920,7 +921,7 @@ public:
                         if (customize == CUSTOMIZE_FACTION)
                         {
                             Player* target = player;
-                            uint64 targetGuid = target->GetGUID();
+                            ObjectGuid targetGuid = target->GetGUID();
                             std::string targetName = target->GetName();
 
                             PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
@@ -929,11 +930,11 @@ public:
                             if (target)
                             {
                                 target->SetAtLoginFlag(AT_LOGIN_CHANGE_FACTION);
-                                stmt->setUInt32(1, target->GetGUIDLow());
+                                stmt->setUInt32(1, target->GetGUID().GetCounter());
                             }
                             else
                             {
-                                stmt->setUInt32(1, GUID_LOPART(targetGuid));
+                                stmt->setUInt32(1, targetGuid.GetCounter());
                             }
 
                             std::ostringstream messageCode;
@@ -946,7 +947,7 @@ public:
                         if (customize == CUSTOMIZE_RACE)
                         {
                             Player* target = player;
-                            uint64 targetGuid = target->GetGUID();
+                            ObjectGuid targetGuid = target->GetGUID();
                             std::string targetName = target->GetName();
 
                             PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
@@ -955,11 +956,11 @@ public:
                             if (target)
                             {
                                 target->SetAtLoginFlag(AT_LOGIN_CHANGE_RACE);
-                                stmt->setUInt32(1, target->GetGUIDLow());
+                                stmt->setUInt32(1, target->GetGUID().GetCounter());
                             }
                             else
                             {
-                                stmt->setUInt32(1, GUID_LOPART(targetGuid));
+                                stmt->setUInt32(1, targetGuid.GetCounter());
                             }
 
                             std::ostringstream messageCode;
@@ -972,7 +973,7 @@ public:
                         if (customize == CUSTOMIZE_RENAME)
                         {
                             Player* target = player;
-                            uint64 targetGuid = target->GetGUID();
+                            ObjectGuid targetGuid = target->GetGUID();
                             std::string targetName = target->GetName();
 
                             if (target)
@@ -983,7 +984,7 @@ public:
                             {
                                 PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
                                 stmt->setUInt16(0, uint16(AT_LOGIN_RENAME));
-                                stmt->setUInt32(1, GUID_LOPART(targetGuid));
+                                stmt->setUInt32(1, targetGuid.GetCounter());
                                 CharacterDatabase.Execute(stmt);
                             }
 
