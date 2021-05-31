@@ -719,7 +719,7 @@ public:
     // Convert Charater Pointer to Int
     uint32 charptouint(const char* code)
     {
-        stringstream strValue;
+        std::stringstream strValue;
         strValue << code;
 
         uint32 intValue;
