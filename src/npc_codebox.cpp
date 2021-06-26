@@ -685,25 +685,25 @@ public:
             char message[1024];
 
             snprintf(message, 1024, "Loot Code: %s", ShowLoot[guid][editid[guid]].loot);
-            player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 60, "", 0, true);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 60, "", 0, true);
 
             snprintf(message, 1024, "Item ID: %u", ShowLoot[guid][editid[guid]].itemId);
-            player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 61, "", 0, true);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 61, "", 0, true);
 
             snprintf(message, 1024, "Description: %s", ShowLoot[guid][editid[guid]].name);
-            player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 62, "", 0, true);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 62, "", 0, true);
 
             snprintf(message, 1024, "Quantity: %u", ShowLoot[guid][editid[guid]].quantity);
-            player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 63, "", 0, true);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 63, "", 0, true);
 
             snprintf(message, 1024, "Gold: %u", ShowLoot[guid][editid[guid]].gold);
-            player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 64, "", 0, true);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 64, "", 0, true);
 
             snprintf(message, 1024, "Customize ID: %u", ShowLoot[guid][editid[guid]].customize);
             AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 65);
 
             snprintf(message, 1024, "Charges: %u", ShowLoot[guid][editid[guid]].charges);
-            player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 66, "", 0, true);
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 66, "", 0, true);
 
             snprintf(message, 1024, "Unique: %u", ShowLoot[guid][editid[guid]].unique);
 
@@ -736,25 +736,25 @@ public:
         char message[1024];
 
         snprintf(message, 1024, "Loot Code: %s", ShowLoot[guid][id].loot);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 60, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 60, "", 0, true);
 
         snprintf(message, 1024, "Item ID: %u", ShowLoot[guid][id].itemId);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 61, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 61, "", 0, true);
 
         snprintf(message, 1024, "Description: %s", ShowLoot[guid][id].name);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 62, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 62, "", 0, true);
 
         snprintf(message, 1024, "Quantity: %u", ShowLoot[guid][id].quantity);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 63, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 63, "", 0, true);
 
         snprintf(message, 1024, "Gold: %u", ShowLoot[guid][id].gold);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 64, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 64, "", 0, true);
 
         snprintf(message, 1024, "Customize ID: %u", ShowLoot[guid][id].customize);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 65);
 
         snprintf(message, 1024, "Charges: %u", ShowLoot[guid][id].charges);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 66, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 66, "", 0, true);
 
         snprintf(message, 1024, "Unique: %u", ShowLoot[guid][id].unique);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 67);
@@ -774,25 +774,25 @@ public:
         char message[1024];
 
         snprintf(message, 1024, "Loot Code: %s", AddLoot[guid].loot);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 20, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 20, "", 0, true);
 
         snprintf(message, 1024, "Item ID: %u", AddLoot[guid].itemId);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 21, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 21, "", 0, true);
 
         snprintf(message, 1024, "Description: %s", AddLoot[guid].name);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 22, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 22, "", 0, true);
 
         snprintf(message, 1024, "Quantity: %u", AddLoot[guid].quantity);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 23, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 23, "", 0, true);
 
         snprintf(message, 1024, "Gold: %u", AddLoot[guid].gold);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 24, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 24, "", 0, true);
 
         snprintf(message, 1024, "Customize ID: %u", AddLoot[guid].customize);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 25);
 
         snprintf(message, 1024, "Charges: %u", AddLoot[guid].charges);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 26, "", 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 26, "", 0, true);
 
         snprintf(message, 1024, "Unique: %u", AddLoot[guid].unique);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 27);
@@ -816,13 +816,13 @@ public:
         std::string text = "Enter Loot Code then Press Accept";
         std::string add_loot_text = "Add A Loot Code?";
         std::string remove_loot_text = "Remove A Loot Code?";
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_MONEY_BAG, "I'd like to enter my loot code.", GOSSIP_SENDER_MAIN, 1, text, 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, "I'd like to enter my loot code.", GOSSIP_SENDER_MAIN, 1, text, 0, true);
 
         // For Gamemasters
         if (player->IsGameMaster())
         {
-            player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_INTERACT_1, "[GM] Add Loot Code", GOSSIP_SENDER_MAIN, 20, add_loot_text, 0, true);
-            player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_INTERACT_1, "[GM] Remove Loot Code", GOSSIP_SENDER_MAIN, 40, remove_loot_text, 0, true);
+            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "[GM] Add Loot Code", GOSSIP_SENDER_MAIN, 20, add_loot_text, 0, true);
+            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "[GM] Remove Loot Code", GOSSIP_SENDER_MAIN, 40, remove_loot_text, 0, true);
             AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "[GM] View Loot Codes", GOSSIP_SENDER_MAIN, 50);
         }
         SendGossipMenuFor(player, CodeboxNPCID, creature->GetGUID());
@@ -924,7 +924,7 @@ public:
                             ObjectGuid targetGuid = target->GetGUID();
                             std::string targetName = target->GetName();
 
-                            PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
+                            auto* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
 
                             stmt->setUInt16(0, uint16(AT_LOGIN_CHANGE_FACTION));
                             if (target)
@@ -950,7 +950,7 @@ public:
                             ObjectGuid targetGuid = target->GetGUID();
                             std::string targetName = target->GetName();
 
-                            PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
+                            auto* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
 
                             stmt->setUInt16(0, uint16(AT_LOGIN_CHANGE_RACE));
                             if (target)
@@ -982,7 +982,7 @@ public:
                             }
                             else
                             {
-                                PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
+                                auto* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
                                 stmt->setUInt16(0, uint16(AT_LOGIN_RENAME));
                                 stmt->setUInt32(1, targetGuid.GetCounter());
                                 CharacterDatabase.Execute(stmt);
@@ -1014,7 +1014,7 @@ public:
         messageCode << "Your code has been redeemed " << player->GetName() << ". Have a nice day!";
         creature->MonsterWhisper(messageCode.str().c_str(), player);
         creature->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-        player->CLOSE_GOSSIP_MENU();
+        CloseGossipMenuFor(player);
     }
 
     // Passive Emotes
