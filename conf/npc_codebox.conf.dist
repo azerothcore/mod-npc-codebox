@@ -6,4 +6,5 @@
 
 # Announce the module when the player logs in?
 
-CodeboxNPC.Announce = 1
+Codebox.Announce = 1
+Codebox.MessageTimer = 60000
