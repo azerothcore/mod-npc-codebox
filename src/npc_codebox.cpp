@@ -154,8 +154,8 @@ public:
     void OnBeforeConfigLoad(bool reload) override
     {
         if (!reload) {
-            CodeboxAnnounceModule = sConfigMgr->GetBoolDefault("Codebox.Announce", true);
-            CodeboxMessageTimer = sConfigMgr->GetIntDefault("Codebox.MessageTimer", 60000);
+            CodeboxAnnounceModule = sConfigMgr->GetOption<bool>("Codebox.Announce", true);
+            CodeboxMessageTimer = sConfigMgr->GetOption<int>("Codebox.MessageTimer", 60000);
 
             // Enforce Min/Max Time
             if (CodeboxMessageTimer != 0)
