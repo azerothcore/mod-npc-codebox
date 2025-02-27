@@ -223,7 +223,7 @@ public:
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", that is not a valid code name.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 SendGossipMenuFor(player, CodeboxNPCID, creature->GetGUID());
                 return false;
             }
@@ -236,7 +236,7 @@ public:
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", this code already exists.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 SendGossipMenuFor(player, CodeboxNPCID, creature->GetGUID());
             }
             else
@@ -289,7 +289,7 @@ public:
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", that is not a valid code.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                 showInitialMenu(player, creature);
                 return true;
@@ -313,7 +313,7 @@ public:
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", that is not a valid code name.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 SendGossipMenuFor(player, CodeboxNPCID, creature->GetGUID());
                 return false;
             }
@@ -325,7 +325,7 @@ public:
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", this code already exists.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 SendGossipMenuFor(player, CodeboxNPCID, creature->GetGUID());
             }
             else
@@ -424,7 +424,7 @@ public:
             WorldDatabase.PQuery("INSERT INTO lootcode_items (code, itemId, name, quantity, gold, customize, charges, isUnique) VALUES ('%s', %u, '%s', %u, %u, %u, %u, %u);", AddLoot[guid].loot, AddLoot[guid].itemId, AddLoot[guid].name, AddLoot[guid].quantity, AddLoot[guid].gold, AddLoot[guid].customize, AddLoot[guid].charges, AddLoot[guid].unique);
             std::ostringstream messageCode;
             messageCode << "The lootcode " << AddLoot[guid].loot << " has been added in the database.";
-            creature->MonsterWhisper(messageCode.str().c_str(), player);
+            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
             initializeAddLoot(guid);
             showInitialMenu(player, creature);
         }
@@ -446,7 +446,7 @@ public:
             std::ostringstream messageCode;
             messageCode << "The lootcode " << DelLoot[guid].loot << " has been deleted from the database.";
             //messageCode << "The lootcode " << AddLoot[guid].loot << " has been deleted from the database.";
-            creature->MonsterWhisper(messageCode.str().c_str(), player);
+            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
             showInitialMenu(player, creature);
         }
         if (action == 42)
@@ -473,7 +473,7 @@ public:
                     std::ostringstream messageCode;
                     messageCode << "Error: Code Not Found!";
                     player->PlayDirectSound(9638); // No
-                    creature->MonsterWhisper(messageCode.str().c_str(), player);
+                    creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                     creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                     showInitialMenu(player, creature);
                     return true;
@@ -559,7 +559,7 @@ public:
             WorldDatabase.PQuery("UPDATE lootcode_items SET code='%s', itemId=%u, name='%s', quantity=%u, gold=%u, customize=%u, charges=%u, isUnique=%u WHERE  id=%u;", ShowLoot[guid][editid[guid]].loot, ShowLoot[guid][editid[guid]].itemId, ShowLoot[guid][editid[guid]].name, ShowLoot[guid][editid[guid]].quantity, ShowLoot[guid][editid[guid]].gold, ShowLoot[guid][editid[guid]].customize, ShowLoot[guid][editid[guid]].charges, ShowLoot[guid][editid[guid]].unique, editid[guid]);
             std::ostringstream messageCode;
             messageCode << "The lootcode " << ShowLoot[guid][editid[guid]].loot << " edited.";
-            creature->MonsterWhisper(messageCode.str().c_str(), player);
+            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
             showInitialMenu(player, creature);
         }
 
@@ -586,7 +586,7 @@ public:
                     std::ostringstream messageCode;
                     messageCode << "Error: Code Not Found!";
                     player->PlayDirectSound(9638); // No
-                    creature->MonsterWhisper(messageCode.str().c_str(), player);
+                    creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                     creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                     showInitialMenu(player, creature);
                     return true;
@@ -637,7 +637,7 @@ public:
                     std::ostringstream messageCode;
                     messageCode << "Error: Code Not Found!";
                     player->PlayDirectSound(9638); // No
-                    creature->MonsterWhisper(messageCode.str().c_str(), player);
+                    creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                     creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                     showInitialMenu(player, creature);
                     return true;
@@ -852,7 +852,7 @@ public:
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", that is not a valid code.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                 showInitialMenu(player, creature);
                 return;
@@ -885,7 +885,7 @@ public:
                         std::ostringstream messageCode;
                         messageCode << "Sorry " << player->GetName() << ", This unique code has already been redeemed.";
                         player->PlayDirectSound(9638); // No
-                        creature->MonsterWhisper(messageCode.str().c_str(), player);
+                        creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                         creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                         showInitialMenu(player, creature);
                         return;
@@ -986,7 +986,7 @@ public:
                     std::ostringstream messageCode;
                     messageCode << "Sorry, " << player->GetName() << ". you've reached the limit on this code.";
                     player->PlayDirectSound(9638); // No
-                    creature->MonsterWhisper(messageCode.str().c_str(), player);
+                    creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                     creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                     showInitialMenu(player, creature);
                     return;
@@ -998,7 +998,7 @@ public:
         // Code successfully redeemed
         std::ostringstream messageCode;
         messageCode << "Your code has been redeemed " << player->GetName() << ". Have a nice day!";
-        creature->MonsterWhisper(messageCode.str().c_str(), player);
+        creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
         creature->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
         CloseGossipMenuFor(player);
     }
