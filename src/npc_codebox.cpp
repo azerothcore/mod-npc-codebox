@@ -92,12 +92,12 @@ player.
 - This code and content is released under the [GNU AGPL v3](https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3).
 
 */
-#include "Player.h"
-#include "ScriptMgr.h"
-#include "Config.h"
-#include "ScriptedGossip.h"
 #include "Chat.h"
+#include "Config.h"
+#include "Player.h"
 #include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "ScriptMgr.h"
 
 enum Customization {
     CUSTOMIZE_FACTION = 1,
@@ -149,11 +149,14 @@ std::unordered_map<ObjectGuid, uint32> lootid;
 class CodeboxConfig : public WorldScript
 {
 public:
-    CodeboxConfig() : WorldScript("CodeboxConfig") { }
+    CodeboxConfig() : WorldScript("CodeboxConfig", {
+        WORLDHOOK_ON_BEFORE_CONFIG_LOAD
+    }) { }
 
     void OnBeforeConfigLoad(bool reload) override
     {
-        if (!reload) {
+        if (!reload)
+        {
             CodeboxAnnounceModule = sConfigMgr->GetOption<bool>("Codebox.Announce", true);
             CodeboxMessageTimer = sConfigMgr->GetOption<int>("Codebox.MessageTimer", 60000);
 
@@ -161,9 +164,7 @@ public:
             if (CodeboxMessageTimer != 0)
             {
                 if (CodeboxMessageTimer < 60000 || CodeboxMessageTimer > 300000)
-                {
                     CodeboxMessageTimer = 60000;
-                }
             }
         }
     }
@@ -174,15 +175,15 @@ class CodeboxAnnounce : public PlayerScript
 
 public:
 
-    CodeboxAnnounce() : PlayerScript("CodeboxAnnounce") {}
+    CodeboxAnnounce() : PlayerScript("CodeboxAnnounce", {
+        PLAYERHOOK_ON_LOGIN
+    }) {}
 
-    void OnLogin(Player* player)
+    void OnPlayerLogin(Player* player)
     {
         // Announce Module
         if (CodeboxAnnounceModule)
-        {
             ChatHandler(player->GetSession()).SendSysMessage("This server is running the |cff4CFF00CodeboxNPC |rmodule.");
-        }
     }
 };
 
@@ -202,15 +203,11 @@ public:
     bool OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code)
     {
         if (sender != GOSSIP_SENDER_MAIN)
-        {
             return false;
-        }
 
         if (action == 1) {
             if (!code)
-            {
                 code = "";
-            }
 
             // Determine Loot
             getLoot(player, creature, code);
@@ -267,22 +264,27 @@ public:
             showLootMenu(player, creature);
         }
 
-        if (action == 24) {
+        if (action == 24)
+        {
             AddLoot[guid].gold = charptouint(code);
             showLootMenu(player, creature);
         }
-        if (action == 26) {
+        if (action == 26)
+        {
             AddLoot[guid].charges = charptouint(code);
             showLootMenu(player, creature);
         }
-        if (action == 27) {
+        if (action == 27)
+        {
             AddLoot[guid].unique = charptouint(code);
             showLootMenu(player, creature);
         }
-        if (action == 40) {
+        if (action == 40)
+        {
             // Check for a valid code
             QueryResult checkCode = WorldDatabase.PQuery("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '%s'", (code));
-            if (!checkCode) {
+            if (!checkCode)
+            {
                 // No code match found in database
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", that is not a valid code.";
@@ -292,7 +294,8 @@ public:
                 showInitialMenu(player, creature);
                 return true;
             }
-            else {
+            else
+            {
                 snprintf(DelLoot[guid].loot, sizeof(DelLoot[guid].loot), "%s", code);
                 ClearGossipMenuFor(player);
                 AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "Delete Loot Code", GOSSIP_SENDER_MAIN, 41);
@@ -302,7 +305,8 @@ public:
             }
         }
 
-        if (action == 60) {
+        if (action == 60)
+        {
             if (!code || strcmp(code, " ") != -1)
             {
                 code = "";
@@ -316,40 +320,48 @@ public:
             // Check for a valid code
             QueryResult checkCode = WorldDatabase.PQuery("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '%s'", (code));
 
-            if (checkCode) {
+            if (checkCode)
+            {
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", this code already exists.";
                 player->PlayDirectSound(9638); // No
                 creature->MonsterWhisper(messageCode.str().c_str(), player);
                 SendGossipMenuFor(player, CodeboxNPCID, creature->GetGUID());
             }
-            else {
+            else
+            {
                 snprintf(ShowLoot[guid][editid[guid]].loot, sizeof(ShowLoot[guid][editid[guid]].loot), "%s", code);
                 showEditMenu(player, creature, editid[guid]);
             }
         }
 
-        if (action == 61) {
+        if (action == 61)
+        {
             ShowLoot[guid][editid[guid]].itemId = charptouint(code);
             showEditMenu(player, creature, editid[guid]);
         }
-        if (action == 62) {
+        if (action == 62)
+        {
             snprintf(ShowLoot[guid][editid[guid]].name, sizeof(ShowLoot[guid][editid[guid]].name), "%s", code);
             showEditMenu(player, creature, editid[guid]);
         }
-        if (action == 63) {
+        if (action == 63)
+        {
             ShowLoot[guid][editid[guid]].quantity = charptouint(code);
             showEditMenu(player, creature, editid[guid]);
         }
-        if (action == 64) {
+        if (action == 64)
+        {
             ShowLoot[guid][editid[guid]].gold = charptouint(code);
             showEditMenu(player, creature, editid[guid]);
         }
-        if (action == 66) {
+        if (action == 66)
+        {
             ShowLoot[guid][editid[guid]].charges = charptouint(code);
             showEditMenu(player, creature, editid[guid]);
         }
-        if (action == 67) {
+        if (action == 67)
+        {
             ShowLoot[guid][editid[guid]].unique = charptouint(code);
             showEditMenu(player, creature, editid[guid]);
         }
@@ -360,9 +372,7 @@ public:
     bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
     {
         if (sender != GOSSIP_SENDER_MAIN)
-        {
             return false;
-        }
 
         ObjectGuid guid = player->GetGUID();
 
@@ -488,9 +498,7 @@ public:
             } while (getLoot->NextRow());
 
             if (total_results > max_loot_results)
-            {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Next", GOSSIP_SENDER_MAIN, 80);
-            }
 
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Close", GOSSIP_SENDER_MAIN, 82);
             SendGossipMenuFor(player, 601050, creature->GetGUID());
@@ -603,14 +611,10 @@ public:
             } while (getLoot->NextRow());
 
             if (total_results - lootid[guid] > max_loot_results)
-            {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Next", GOSSIP_SENDER_MAIN, 80);
-            }
 
             if (lootid[guid] >= max_loot_results)
-            {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Back", GOSSIP_SENDER_MAIN, 81);
-            }
 
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Close", GOSSIP_SENDER_MAIN, 82);
             SendGossipMenuFor(player, 601050, creature->GetGUID());
@@ -658,23 +662,17 @@ public:
             } while (getLoot->NextRow());
 
             if (total_results - lootid[guid] > max_loot_results)
-            {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Next", GOSSIP_SENDER_MAIN, 80);
-            }
 
             if (lootid[guid] >= max_loot_results)
-            {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Back", GOSSIP_SENDER_MAIN, 81);
-            }
 
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Close", GOSSIP_SENDER_MAIN, 82);
             SendGossipMenuFor(player, 601050, creature->GetGUID());
         }
 
         if (action == 82)
-        {
             showInitialMenu(player, creature);
-        }
 
         if (action >= 100)
         {
@@ -809,9 +807,7 @@ public:
 
         // If GameMaster
         if (player->IsGameMaster())
-        {
             initializeAddLoot(player->GetGUID());
-        }
 
         std::string text = "Enter Loot Code then Press Accept";
         std::string add_loot_text = "Add A Loot Code?";
@@ -904,15 +900,11 @@ public:
 
                     // Add Item to player inventory
                     if (itemId != 0)
-                    {
                         player->AddItem(itemId, quantity);
-                    }
 
                     // Add Gold to player inventory
                     if (gold != 0)
-                    {
                         player->ModifyMoney(gold * 10000);
-                    }
 
                     // Customize Character
                     if (customize != 0)
@@ -933,9 +925,7 @@ public:
                                 stmt->setUInt32(1, target->GetGUID().GetCounter());
                             }
                             else
-                            {
                                 stmt->setUInt32(1, targetGuid.GetCounter());
-                            }
 
                             std::ostringstream messageCode;
                             messageCode << "You can change your faction on your next login " << target->GetName() << ".";
@@ -959,9 +949,7 @@ public:
                                 stmt->setUInt32(1, target->GetGUID().GetCounter());
                             }
                             else
-                            {
                                 stmt->setUInt32(1, targetGuid.GetCounter());
-                            }
 
                             std::ostringstream messageCode;
                             messageCode << "You can change your race on your next login " << target->GetName() << ".";
@@ -977,9 +965,7 @@ public:
                             std::string targetName = target->GetName();
 
                             if (target)
-                            {
                                 target->SetAtLoginFlag(AT_LOGIN_RENAME);
-                            }
                             else
                             {
                                 auto* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
@@ -1075,7 +1061,8 @@ public:
                     }
                     }
                 }
-                else { MessageTimer -= diff; }
+                else
+                    MessageTimer -= diff;
             }
         };
     };
