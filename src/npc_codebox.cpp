@@ -918,14 +918,14 @@ public:
 
                             auto* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
 
-                            stmt->setUInt16(0, uint16(AT_LOGIN_CHANGE_FACTION));
+                            stmt->SetData(0, uint16(AT_LOGIN_CHANGE_FACTION));
                             if (target)
                             {
                                 target->SetAtLoginFlag(AT_LOGIN_CHANGE_FACTION);
-                                stmt->setUInt32(1, target->GetGUID().GetCounter());
+                                stmt->SetData(1, target->GetGUID().GetCounter());
                             }
                             else
-                                stmt->setUInt32(1, targetGuid.GetCounter());
+                                stmt->SetData(1, targetGuid.GetCounter());
 
                             std::ostringstream messageCode;
                             messageCode << "You can change your faction on your next login " << target->GetName() << ".";
@@ -942,14 +942,14 @@ public:
 
                             auto* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
 
-                            stmt->setUInt16(0, uint16(AT_LOGIN_CHANGE_RACE));
+                            stmt->SetData(0, uint16(AT_LOGIN_CHANGE_RACE));
                             if (target)
                             {
                                 target->SetAtLoginFlag(AT_LOGIN_CHANGE_RACE);
-                                stmt->setUInt32(1, target->GetGUID().GetCounter());
+                                stmt->SetData(1, target->GetGUID().GetCounter());
                             }
                             else
-                                stmt->setUInt32(1, targetGuid.GetCounter());
+                                stmt->SetData(1, targetGuid.GetCounter());
 
                             std::ostringstream messageCode;
                             messageCode << "You can change your race on your next login " << target->GetName() << ".";
@@ -969,8 +969,8 @@ public:
                             else
                             {
                                 auto* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
-                                stmt->setUInt16(0, uint16(AT_LOGIN_RENAME));
-                                stmt->setUInt32(1, targetGuid.GetCounter());
+                                stmt->SetData(0, uint16(AT_LOGIN_RENAME));
+                                stmt->SetData(1, targetGuid.GetCounter());
                                 CharacterDatabase.Execute(stmt);
                             }
 
