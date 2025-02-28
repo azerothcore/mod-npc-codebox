@@ -482,9 +482,9 @@ public:
                 {
                     Field * fields = getLoot->Fetch();
                     uint32 id = fields[0].Get<uint32>();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>());
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>().c_str());
                     ShowLoot[guid][id].itemId = fields[2].Get<uint32>();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>());
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>().c_str());
                     ShowLoot[guid][id].quantity = fields[4].Get<uint32>();
                     ShowLoot[guid][id].gold = fields[5].Get<uint32>();
                     ShowLoot[guid][id].customize = fields[6].Get<uint32>();
@@ -595,9 +595,9 @@ public:
                 {
                     Field * fields = getLoot->Fetch();
                     uint32 id = fields[0].Get<uint32>();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>());
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>().c_str());
                     ShowLoot[guid][id].itemId = fields[2].Get<uint32>();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>());
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>().c_str());
                     ShowLoot[guid][id].quantity = fields[4].Get<uint32>();
                     ShowLoot[guid][id].gold = fields[5].Get<uint32>();
                     ShowLoot[guid][id].customize = fields[6].Get<uint32>();
@@ -646,9 +646,9 @@ public:
                 {
                     Field * fields = getLoot->Fetch();
                     uint32 id = fields[0].Get<uint32>();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>());
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>().c_str());
                     ShowLoot[guid][id].itemId = fields[2].Get<uint32>();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>());
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>().c_str());
                     ShowLoot[guid][id].quantity = fields[4].Get<uint32>();
                     ShowLoot[guid][id].gold = fields[5].Get<uint32>();
                     ShowLoot[guid][id].customize = fields[6].Get<uint32>();
@@ -861,7 +861,7 @@ public:
 
                 // Get checkCode fields
                 Field * fields = checkCode->Fetch();
-                const char* code = fields[0].Get<std::string>();
+                const char* code = fields[0].Get<std::string>().c_str();
                 uint32 itemId = fields[1].Get<uint32>();
                 uint32 quantity = fields[2].Get<uint32>();
                 uint32 gold = fields[3].Get<uint32>();
