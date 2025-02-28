@@ -929,7 +929,7 @@ public:
 
                             std::ostringstream messageCode;
                             messageCode << "You can change your faction on your next login " << target->GetName() << ".";
-                            creature->MonsterWhisper(messageCode.str().c_str(), target);
+                            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, target);
                             CharacterDatabase.Execute(stmt);
                         }
 
@@ -953,7 +953,7 @@ public:
 
                             std::ostringstream messageCode;
                             messageCode << "You can change your race on your next login " << target->GetName() << ".";
-                            creature->MonsterWhisper(messageCode.str().c_str(), target);
+                            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, target);
                             CharacterDatabase.Execute(stmt);
                         }
 
@@ -976,7 +976,7 @@ public:
 
                             std::ostringstream messageCode;
                             messageCode << "You can rename your character on your next login " << target->GetName() << ".";
-                            creature->MonsterWhisper(messageCode.str().c_str(), target);
+                            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, target);
                         }
                     }
                 }
