@@ -229,7 +229,7 @@ public:
             }
 
             // Check for a valid code
-            QueryResult checkCode = WorldDatabase.PQuery("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '%s'", (code));
+            QueryResult checkCode = WorldDatabase.Query("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '{}'", (code));
 
             if (checkCode)
             {
@@ -241,7 +241,7 @@ public:
             }
             else
             {
-                snprintf(AddLoot[guid].loot, sizeof(AddLoot[guid].loot), "%s", code);
+                snprintf(AddLoot[guid].loot, sizeof(AddLoot[guid].loot), "{}", code);
                 showLootMenu(player, creature);
             }
         }
@@ -254,7 +254,7 @@ public:
 
         if (action == 22)
         {
-            snprintf(AddLoot[guid].name, sizeof(AddLoot[guid].name), "%s", code);
+            snprintf(AddLoot[guid].name, sizeof(AddLoot[guid].name), "{}", code);
             showLootMenu(player, creature);
         }
 
@@ -282,7 +282,7 @@ public:
         if (action == 40)
         {
             // Check for a valid code
-            QueryResult checkCode = WorldDatabase.PQuery("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '%s'", (code));
+            QueryResult checkCode = WorldDatabase.Query("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '{}'", (code));
             if (!checkCode)
             {
                 // No code match found in database
@@ -296,7 +296,7 @@ public:
             }
             else
             {
-                snprintf(DelLoot[guid].loot, sizeof(DelLoot[guid].loot), "%s", code);
+                snprintf(DelLoot[guid].loot, sizeof(DelLoot[guid].loot), "{}", code);
                 ClearGossipMenuFor(player);
                 AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "Delete Loot Code", GOSSIP_SENDER_MAIN, 41);
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Cancel", GOSSIP_SENDER_MAIN, 42);
@@ -318,7 +318,7 @@ public:
                 return false;
             }
             // Check for a valid code
-            QueryResult checkCode = WorldDatabase.PQuery("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '%s'", (code));
+            QueryResult checkCode = WorldDatabase.Query("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '{}'", (code));
 
             if (checkCode)
             {
@@ -330,7 +330,7 @@ public:
             }
             else
             {
-                snprintf(ShowLoot[guid][editid[guid]].loot, sizeof(ShowLoot[guid][editid[guid]].loot), "%s", code);
+                snprintf(ShowLoot[guid][editid[guid]].loot, sizeof(ShowLoot[guid][editid[guid]].loot), "{}", code);
                 showEditMenu(player, creature, editid[guid]);
             }
         }
@@ -342,7 +342,7 @@ public:
         }
         if (action == 62)
         {
-            snprintf(ShowLoot[guid][editid[guid]].name, sizeof(ShowLoot[guid][editid[guid]].name), "%s", code);
+            snprintf(ShowLoot[guid][editid[guid]].name, sizeof(ShowLoot[guid][editid[guid]].name), "{}", code);
             showEditMenu(player, creature, editid[guid]);
         }
         if (action == 63)
@@ -421,7 +421,7 @@ public:
         if (action == 28)
         {
             // Add the entry to the database
-            WorldDatabase.PQuery("INSERT INTO lootcode_items (code, itemId, name, quantity, gold, customize, charges, isUnique) VALUES ('%s', %u, '%s', %u, %u, %u, %u, %u);", AddLoot[guid].loot, AddLoot[guid].itemId, AddLoot[guid].name, AddLoot[guid].quantity, AddLoot[guid].gold, AddLoot[guid].customize, AddLoot[guid].charges, AddLoot[guid].unique);
+            WorldDatabase.Query("INSERT INTO lootcode_items (code, itemId, name, quantity, gold, customize, charges, isUnique) VALUES ('{}', {}, '{}', {}, {}, {}, {}, {});", AddLoot[guid].loot, AddLoot[guid].itemId, AddLoot[guid].name, AddLoot[guid].quantity, AddLoot[guid].gold, AddLoot[guid].customize, AddLoot[guid].charges, AddLoot[guid].unique);
             std::ostringstream messageCode;
             messageCode << "The lootcode " << AddLoot[guid].loot << " has been added in the database.";
             creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
@@ -442,7 +442,7 @@ public:
         if (action == 41)
         {
             // Delete the entry from the database
-            WorldDatabase.PQuery("DELETE FROM lootcode_items WHERE  code = '%s';", DelLoot[guid].loot);
+            WorldDatabase.Query("DELETE FROM lootcode_items WHERE  code = '{}';", DelLoot[guid].loot);
             std::ostringstream messageCode;
             messageCode << "The lootcode " << DelLoot[guid].loot << " has been deleted from the database.";
             //messageCode << "The lootcode " << AddLoot[guid].loot << " has been deleted from the database.";
@@ -460,8 +460,8 @@ public:
             ClearGossipMenuFor(player);
             lootid[guid] = 0;
 
-            QueryResult getLoot = WorldDatabase.PQuery("SELECT * FROM lootcode_items LIMIT %u;", max_loot_results);
-            QueryResult count_results = WorldDatabase.PQuery("SELECT COUNT(id) FROM lootcode_items");
+            QueryResult getLoot = WorldDatabase.Query("SELECT * FROM lootcode_items LIMIT {};", max_loot_results);
+            QueryResult count_results = WorldDatabase.Query("SELECT COUNT(id) FROM lootcode_items");
             Field * fields_count = count_results->Fetch();
             uint32 total_results = fields_count[0].GetUInt32();
 
@@ -482,9 +482,9 @@ public:
                 {
                     Field * fields = getLoot->Fetch();
                     uint32 id = fields[0].GetUInt32();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].GetCString());
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "{}", fields[1].GetCString());
                     ShowLoot[guid][id].itemId = fields[2].GetUInt32();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].GetCString());
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "{}", fields[3].GetCString());
                     ShowLoot[guid][id].quantity = fields[4].GetUInt32();
                     ShowLoot[guid][id].gold = fields[5].GetUInt32();
                     ShowLoot[guid][id].customize = fields[6].GetUInt32();
@@ -492,7 +492,7 @@ public:
                     ShowLoot[guid][id].unique = fields[8].GetUInt32();
 
                     char message[1024] = "";
-                    snprintf(message, 1024, "%u) [%s] %s", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
+                    snprintf(message, 1024, "{}) [{}] {}", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
                     AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, message, GOSSIP_SENDER_MAIN, 100 + id);
                 }
             } while (getLoot->NextRow());
@@ -556,7 +556,7 @@ public:
         if (action == 70)
         {
             // Add the entry to the database
-            WorldDatabase.PQuery("UPDATE lootcode_items SET code='%s', itemId=%u, name='%s', quantity=%u, gold=%u, customize=%u, charges=%u, isUnique=%u WHERE  id=%u;", ShowLoot[guid][editid[guid]].loot, ShowLoot[guid][editid[guid]].itemId, ShowLoot[guid][editid[guid]].name, ShowLoot[guid][editid[guid]].quantity, ShowLoot[guid][editid[guid]].gold, ShowLoot[guid][editid[guid]].customize, ShowLoot[guid][editid[guid]].charges, ShowLoot[guid][editid[guid]].unique, editid[guid]);
+            WorldDatabase.Query("UPDATE lootcode_items SET code='{}', itemId={}, name='{}', quantity={}, gold={}, customize={}, charges={}, isUnique={} WHERE  id={};", ShowLoot[guid][editid[guid]].loot, ShowLoot[guid][editid[guid]].itemId, ShowLoot[guid][editid[guid]].name, ShowLoot[guid][editid[guid]].quantity, ShowLoot[guid][editid[guid]].gold, ShowLoot[guid][editid[guid]].customize, ShowLoot[guid][editid[guid]].charges, ShowLoot[guid][editid[guid]].unique, editid[guid]);
             std::ostringstream messageCode;
             messageCode << "The lootcode " << ShowLoot[guid][editid[guid]].loot << " edited.";
             creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
@@ -573,8 +573,8 @@ public:
         {
             ClearGossipMenuFor(player);
             lootid[guid] += max_loot_results;
-            QueryResult getLoot = WorldDatabase.PQuery("SELECT * FROM lootcode_items LIMIT %u,%u;", lootid[guid], max_loot_results);
-            QueryResult count_results = WorldDatabase.PQuery("SELECT COUNT(id) FROM lootcode_items");
+            QueryResult getLoot = WorldDatabase.Query("SELECT * FROM lootcode_items LIMIT {},{};", lootid[guid], max_loot_results);
+            QueryResult count_results = WorldDatabase.Query("SELECT COUNT(id) FROM lootcode_items");
             Field * fields_count = count_results->Fetch();
             uint32 total_results = fields_count[0].GetUInt32();
 
@@ -595,9 +595,9 @@ public:
                 {
                     Field * fields = getLoot->Fetch();
                     uint32 id = fields[0].GetUInt32();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].GetCString());
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "{}", fields[1].GetCString());
                     ShowLoot[guid][id].itemId = fields[2].GetUInt32();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].GetCString());
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "{}", fields[3].GetCString());
                     ShowLoot[guid][id].quantity = fields[4].GetUInt32();
                     ShowLoot[guid][id].gold = fields[5].GetUInt32();
                     ShowLoot[guid][id].customize = fields[6].GetUInt32();
@@ -605,7 +605,7 @@ public:
                     ShowLoot[guid][id].unique = fields[8].GetUInt32();
 
                     char message[1024] = "";
-                    snprintf(message, 1024, "%u) [%s] %s", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
+                    snprintf(message, 1024, "{}) [{}] {}", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
                     AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, message, GOSSIP_SENDER_MAIN, 100 + id);
                 }
             } while (getLoot->NextRow());
@@ -624,8 +624,8 @@ public:
         {
             ClearGossipMenuFor(player);
             lootid[guid] -= max_loot_results;
-            QueryResult getLoot = WorldDatabase.PQuery("SELECT * FROM lootcode_items LIMIT %u,%u;", lootid[guid], max_loot_results);
-            QueryResult count_results = WorldDatabase.PQuery("SELECT COUNT(id) FROM lootcode_items");
+            QueryResult getLoot = WorldDatabase.Query("SELECT * FROM lootcode_items LIMIT {},{};", lootid[guid], max_loot_results);
+            QueryResult count_results = WorldDatabase.Query("SELECT COUNT(id) FROM lootcode_items");
             Field * fields_count = count_results->Fetch();
             uint32 total_results = fields_count[0].GetUInt32();
 
@@ -646,9 +646,9 @@ public:
                 {
                     Field * fields = getLoot->Fetch();
                     uint32 id = fields[0].GetUInt32();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].GetCString());
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "{}", fields[1].GetCString());
                     ShowLoot[guid][id].itemId = fields[2].GetUInt32();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].GetCString());
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "{}", fields[3].GetCString());
                     ShowLoot[guid][id].quantity = fields[4].GetUInt32();
                     ShowLoot[guid][id].gold = fields[5].GetUInt32();
                     ShowLoot[guid][id].customize = fields[6].GetUInt32();
@@ -656,7 +656,7 @@ public:
                     ShowLoot[guid][id].unique = fields[8].GetUInt32();
 
                     char message[1024] = "";
-                    snprintf(message, 1024, "%u) [%s] %s", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
+                    snprintf(message, 1024, "{}) [{}] {}", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
                     AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, message, GOSSIP_SENDER_MAIN, 100 + id);
                 }
             } while (getLoot->NextRow());
@@ -682,28 +682,28 @@ public:
             std::string add_loot_text = "Enter Loot Code";
             char message[1024];
 
-            snprintf(message, 1024, "Loot Code: %s", ShowLoot[guid][editid[guid]].loot);
+            snprintf(message, 1024, "Loot Code: {}", ShowLoot[guid][editid[guid]].loot);
             AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 60, "", 0, true);
 
-            snprintf(message, 1024, "Item ID: %u", ShowLoot[guid][editid[guid]].itemId);
+            snprintf(message, 1024, "Item ID: {}", ShowLoot[guid][editid[guid]].itemId);
             AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 61, "", 0, true);
 
-            snprintf(message, 1024, "Description: %s", ShowLoot[guid][editid[guid]].name);
+            snprintf(message, 1024, "Description: {}", ShowLoot[guid][editid[guid]].name);
             AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 62, "", 0, true);
 
-            snprintf(message, 1024, "Quantity: %u", ShowLoot[guid][editid[guid]].quantity);
+            snprintf(message, 1024, "Quantity: {}", ShowLoot[guid][editid[guid]].quantity);
             AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 63, "", 0, true);
 
-            snprintf(message, 1024, "Gold: %u", ShowLoot[guid][editid[guid]].gold);
+            snprintf(message, 1024, "Gold: {}", ShowLoot[guid][editid[guid]].gold);
             AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 64, "", 0, true);
 
-            snprintf(message, 1024, "Customize ID: %u", ShowLoot[guid][editid[guid]].customize);
+            snprintf(message, 1024, "Customize ID: {}", ShowLoot[guid][editid[guid]].customize);
             AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 65);
 
-            snprintf(message, 1024, "Charges: %u", ShowLoot[guid][editid[guid]].charges);
+            snprintf(message, 1024, "Charges: {}", ShowLoot[guid][editid[guid]].charges);
             AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 66, "", 0, true);
 
-            snprintf(message, 1024, "Unique: %u", ShowLoot[guid][editid[guid]].unique);
+            snprintf(message, 1024, "Unique: {}", ShowLoot[guid][editid[guid]].unique);
 
             AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 67);
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Confirm", GOSSIP_SENDER_MAIN, 70);
@@ -733,28 +733,28 @@ public:
         std::string add_loot_text = "Enter Loot Code";
         char message[1024];
 
-        snprintf(message, 1024, "Loot Code: %s", ShowLoot[guid][id].loot);
+        snprintf(message, 1024, "Loot Code: {}", ShowLoot[guid][id].loot);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 60, "", 0, true);
 
-        snprintf(message, 1024, "Item ID: %u", ShowLoot[guid][id].itemId);
+        snprintf(message, 1024, "Item ID: {}", ShowLoot[guid][id].itemId);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 61, "", 0, true);
 
-        snprintf(message, 1024, "Description: %s", ShowLoot[guid][id].name);
+        snprintf(message, 1024, "Description: {}", ShowLoot[guid][id].name);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 62, "", 0, true);
 
-        snprintf(message, 1024, "Quantity: %u", ShowLoot[guid][id].quantity);
+        snprintf(message, 1024, "Quantity: {}", ShowLoot[guid][id].quantity);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 63, "", 0, true);
 
-        snprintf(message, 1024, "Gold: %u", ShowLoot[guid][id].gold);
+        snprintf(message, 1024, "Gold: {}", ShowLoot[guid][id].gold);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 64, "", 0, true);
 
-        snprintf(message, 1024, "Customize ID: %u", ShowLoot[guid][id].customize);
+        snprintf(message, 1024, "Customize ID: {}", ShowLoot[guid][id].customize);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 65);
 
-        snprintf(message, 1024, "Charges: %u", ShowLoot[guid][id].charges);
+        snprintf(message, 1024, "Charges: {}", ShowLoot[guid][id].charges);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 66, "", 0, true);
 
-        snprintf(message, 1024, "Unique: %u", ShowLoot[guid][id].unique);
+        snprintf(message, 1024, "Unique: {}", ShowLoot[guid][id].unique);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 67);
         AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Confirm", GOSSIP_SENDER_MAIN, 70);
         AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Back..", GOSSIP_SENDER_MAIN, 71);
@@ -771,28 +771,28 @@ public:
         std::string add_loot_text = "Enter Loot Code";
         char message[1024];
 
-        snprintf(message, 1024, "Loot Code: %s", AddLoot[guid].loot);
+        snprintf(message, 1024, "Loot Code: {}", AddLoot[guid].loot);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 20, "", 0, true);
 
-        snprintf(message, 1024, "Item ID: %u", AddLoot[guid].itemId);
+        snprintf(message, 1024, "Item ID: {}", AddLoot[guid].itemId);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 21, "", 0, true);
 
-        snprintf(message, 1024, "Description: %s", AddLoot[guid].name);
+        snprintf(message, 1024, "Description: {}", AddLoot[guid].name);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 22, "", 0, true);
 
-        snprintf(message, 1024, "Quantity: %u", AddLoot[guid].quantity);
+        snprintf(message, 1024, "Quantity: {}", AddLoot[guid].quantity);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 23, "", 0, true);
 
-        snprintf(message, 1024, "Gold: %u", AddLoot[guid].gold);
+        snprintf(message, 1024, "Gold: {}", AddLoot[guid].gold);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 24, "", 0, true);
 
-        snprintf(message, 1024, "Customize ID: %u", AddLoot[guid].customize);
+        snprintf(message, 1024, "Customize ID: {}", AddLoot[guid].customize);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 25);
 
-        snprintf(message, 1024, "Charges: %u", AddLoot[guid].charges);
+        snprintf(message, 1024, "Charges: {}", AddLoot[guid].charges);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 26, "", 0, true);
 
-        snprintf(message, 1024, "Unique: %u", AddLoot[guid].unique);
+        snprintf(message, 1024, "Unique: {}", AddLoot[guid].unique);
         AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, message, GOSSIP_SENDER_MAIN, 27);
         AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "Create Loot Code", GOSSIP_SENDER_MAIN, 28);
         AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Reset", GOSSIP_SENDER_MAIN, 29);
@@ -839,10 +839,10 @@ public:
     void getLoot(Player* player, Creature* creature, const char* code)
     {
         // Check for a valid code
-        QueryResult checkCode = WorldDatabase.PQuery("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '%s'", (code));
+        QueryResult checkCode = WorldDatabase.Query("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '{}'", (code));
 
         // Check if player has redeemed the code
-        QueryResult getLoot = WorldDatabase.PQuery("SELECT playerGUID, count(code) AS chargesUsed FROM lootcode_player WHERE playerGUID like %u AND code = '%s'", player->GetGUID().GetCounter(), (code));
+        QueryResult getLoot = WorldDatabase.Query("SELECT playerGUID, count(code) AS chargesUsed FROM lootcode_player WHERE playerGUID like {} AND code = '{}'", player->GetGUID().GetCounter(), (code));
 
         do
         {
@@ -877,7 +877,7 @@ public:
                 if (isUnique == 1)
                 {
                     // Query for the unique code
-                    QueryResult uniqueRedeemed = WorldDatabase.PQuery("SELECT playerGUID, isUnique FROM lootcode_player WHERE code = '%s' AND isUnique = 1", (code));
+                    QueryResult uniqueRedeemed = WorldDatabase.Query("SELECT playerGUID, isUnique FROM lootcode_player WHERE code = '{}' AND isUnique = 1", (code));
 
                     // If any player has redeemed this unique code, deny the code
                     if (uniqueRedeemed)
@@ -896,7 +896,7 @@ public:
                 if (chargesUsed < charges)
                 {
                     // Add the entry to the database
-                    WorldDatabase.PQuery("INSERT INTO lootcode_player (code, playerGUID, playerName, isUnique) VALUES ('%s', %u, '%s', %u);", (code), player->GetGUID().GetCounter(), player->GetName().c_str(), isUnique);
+                    WorldDatabase.Query("INSERT INTO lootcode_player (code, playerGUID, playerName, isUnique) VALUES ('{}', {}, '{}', {});", (code), player->GetGUID().GetCounter(), player->GetName().c_str(), isUnique);
 
                     // Add Item to player inventory
                     if (itemId != 0)
