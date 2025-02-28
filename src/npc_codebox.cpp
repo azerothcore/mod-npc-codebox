@@ -877,7 +877,7 @@ public:
                 if (isUnique == 1)
                 {
                     // Query for the unique code
-                    QueryResult uniqueRedeemed = WorldDatabase.Query("SELECT playerGUID, isUnique FROM lootcode_player WHERE code = '{}' AND isUnique = 1", (code.cstr()));
+                    QueryResult uniqueRedeemed = WorldDatabase.Query("SELECT playerGUID, isUnique FROM lootcode_player WHERE code = '{}' AND isUnique = 1", (code.c_str()));
 
                     // If any player has redeemed this unique code, deny the code
                     if (uniqueRedeemed)
@@ -896,7 +896,7 @@ public:
                 if (chargesUsed < charges)
                 {
                     // Add the entry to the database
-                    WorldDatabase.Query("INSERT INTO lootcode_player (code, playerGUID, playerName, isUnique) VALUES ('{}', {}, '{}', {});", (code.cstr()), player->GetGUID().GetCounter(), player->GetName().c_str(), isUnique);
+                    WorldDatabase.Query("INSERT INTO lootcode_player (code, playerGUID, playerName, isUnique) VALUES ('{}', {}, '{}', {});", (code.c_str()), player->GetGUID().GetCounter(), player->GetName().c_str(), isUnique);
 
                     // Add Item to player inventory
                     if (itemId != 0)
