@@ -179,7 +179,7 @@ public:
         PLAYERHOOK_ON_LOGIN
     }) {}
 
-    void OnPlayerLogin(Player* player)
+    void OnPlayerLogin(Player* player) override
     {
         // Announce Module
         if (CodeboxAnnounceModule)
@@ -194,13 +194,13 @@ public:
 
     codebox_npc() : CreatureScript("codebox_npc") { }
 
-    bool OnGossipHello(Player* player, Creature* creature)
+    bool OnGossipHello(Player* player, Creature* creature) override
     {
         showInitialMenu(player, creature);
         return true;
     }
 
-    bool OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code)
+    bool OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code) override
     {
         if (sender != GOSSIP_SENDER_MAIN)
             return false;
@@ -369,7 +369,7 @@ public:
         return true;
     }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
     {
         if (sender != GOSSIP_SENDER_MAIN)
             return false;
@@ -1012,13 +1012,13 @@ public:
         uint32 MessageTimer;
 
         // Called once when client is loaded
-        void Reset()
+        void Reset() override
         {
             MessageTimer = urand(CodeboxMessageTimer, 300000); // 1-5 minutes
         }
 
         // Called at World update tick
-        void UpdateAI(const uint32 diff)
+        void UpdateAI(const uint32 diff) override
         {
             // If Enabled
             if (CodeboxMessageTimer != 0)
