@@ -463,7 +463,7 @@ public:
             QueryResult getLoot = WorldDatabase.Query("SELECT * FROM lootcode_items LIMIT {};", max_loot_results);
             QueryResult count_results = WorldDatabase.Query("SELECT COUNT(id) FROM lootcode_items");
             Field * fields_count = count_results->Fetch();
-            uint32 total_results = fields_count[0].GetUInt32();
+            uint32 total_results = fields_count[0].Get<uint32>();
 
             do
             {
@@ -481,15 +481,15 @@ public:
                 else
                 {
                     Field * fields = getLoot->Fetch();
-                    uint32 id = fields[0].GetUInt32();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].GetCString());
-                    ShowLoot[guid][id].itemId = fields[2].GetUInt32();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].GetCString());
-                    ShowLoot[guid][id].quantity = fields[4].GetUInt32();
-                    ShowLoot[guid][id].gold = fields[5].GetUInt32();
-                    ShowLoot[guid][id].customize = fields[6].GetUInt32();
-                    ShowLoot[guid][id].charges = fields[7].GetUInt32();
-                    ShowLoot[guid][id].unique = fields[8].GetUInt32();
+                    uint32 id = fields[0].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>());
+                    ShowLoot[guid][id].itemId = fields[2].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>());
+                    ShowLoot[guid][id].quantity = fields[4].Get<uint32>();
+                    ShowLoot[guid][id].gold = fields[5].Get<uint32>();
+                    ShowLoot[guid][id].customize = fields[6].Get<uint32>();
+                    ShowLoot[guid][id].charges = fields[7].Get<uint32>();
+                    ShowLoot[guid][id].unique = fields[8].Get<uint32>();
 
                     char message[1024] = "";
                     snprintf(message, 1024, "%u) [%s] %s", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
@@ -576,7 +576,7 @@ public:
             QueryResult getLoot = WorldDatabase.Query("SELECT * FROM lootcode_items LIMIT {},{};", lootid[guid], max_loot_results);
             QueryResult count_results = WorldDatabase.Query("SELECT COUNT(id) FROM lootcode_items");
             Field * fields_count = count_results->Fetch();
-            uint32 total_results = fields_count[0].GetUInt32();
+            uint32 total_results = fields_count[0].Get<uint32>();
 
             do
             {
@@ -594,15 +594,15 @@ public:
                 else
                 {
                     Field * fields = getLoot->Fetch();
-                    uint32 id = fields[0].GetUInt32();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].GetCString());
-                    ShowLoot[guid][id].itemId = fields[2].GetUInt32();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].GetCString());
-                    ShowLoot[guid][id].quantity = fields[4].GetUInt32();
-                    ShowLoot[guid][id].gold = fields[5].GetUInt32();
-                    ShowLoot[guid][id].customize = fields[6].GetUInt32();
-                    ShowLoot[guid][id].charges = fields[7].GetUInt32();
-                    ShowLoot[guid][id].unique = fields[8].GetUInt32();
+                    uint32 id = fields[0].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>());
+                    ShowLoot[guid][id].itemId = fields[2].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>());
+                    ShowLoot[guid][id].quantity = fields[4].Get<uint32>();
+                    ShowLoot[guid][id].gold = fields[5].Get<uint32>();
+                    ShowLoot[guid][id].customize = fields[6].Get<uint32>();
+                    ShowLoot[guid][id].charges = fields[7].Get<uint32>();
+                    ShowLoot[guid][id].unique = fields[8].Get<uint32>();
 
                     char message[1024] = "";
                     snprintf(message, 1024, "%u) [%s] %s", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
@@ -627,7 +627,7 @@ public:
             QueryResult getLoot = WorldDatabase.Query("SELECT * FROM lootcode_items LIMIT {},{};", lootid[guid], max_loot_results);
             QueryResult count_results = WorldDatabase.Query("SELECT COUNT(id) FROM lootcode_items");
             Field * fields_count = count_results->Fetch();
-            uint32 total_results = fields_count[0].GetUInt32();
+            uint32 total_results = fields_count[0].Get<uint32>();
 
             do
             {
@@ -645,15 +645,15 @@ public:
                 else
                 {
                     Field * fields = getLoot->Fetch();
-                    uint32 id = fields[0].GetUInt32();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].GetCString());
-                    ShowLoot[guid][id].itemId = fields[2].GetUInt32();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].GetCString());
-                    ShowLoot[guid][id].quantity = fields[4].GetUInt32();
-                    ShowLoot[guid][id].gold = fields[5].GetUInt32();
-                    ShowLoot[guid][id].customize = fields[6].GetUInt32();
-                    ShowLoot[guid][id].charges = fields[7].GetUInt32();
-                    ShowLoot[guid][id].unique = fields[8].GetUInt32();
+                    uint32 id = fields[0].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>());
+                    ShowLoot[guid][id].itemId = fields[2].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>());
+                    ShowLoot[guid][id].quantity = fields[4].Get<uint32>();
+                    ShowLoot[guid][id].gold = fields[5].Get<uint32>();
+                    ShowLoot[guid][id].customize = fields[6].Get<uint32>();
+                    ShowLoot[guid][id].charges = fields[7].Get<uint32>();
+                    ShowLoot[guid][id].unique = fields[8].Get<uint32>();
 
                     char message[1024] = "";
                     snprintf(message, 1024, "%u) [%s] %s", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
@@ -861,17 +861,17 @@ public:
 
                 // Get checkCode fields
                 Field * fields = checkCode->Fetch();
-                const char* code = fields[0].GetCString();
-                uint32 itemId = fields[1].GetUInt32();
-                uint32 quantity = fields[2].GetUInt32();
-                uint32 gold = fields[3].GetUInt32();
-                uint32 customize = fields[4].GetUInt32();
-                uint32 charges = fields[5].GetUInt32();
-                uint32 isUnique = fields[6].GetUInt32();
+                const char* code = fields[0].Get<std::string>();
+                uint32 itemId = fields[1].Get<uint32>();
+                uint32 quantity = fields[2].Get<uint32>();
+                uint32 gold = fields[3].Get<uint32>();
+                uint32 customize = fields[4].Get<uint32>();
+                uint32 charges = fields[5].Get<uint32>();
+                uint32 isUnique = fields[6].Get<uint32>();
 
                 // Get getLoot fields
                 Field * fields2 = getLoot->Fetch();
-                uint32 chargesUsed = fields2[1].GetUInt32();
+                uint32 chargesUsed = fields2[1].Get<uint32>();
 
                 // If the code is unqiue, check to see if anyone has already used it.
                 if (isUnique == 1)
