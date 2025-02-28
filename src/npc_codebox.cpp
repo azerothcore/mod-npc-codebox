@@ -861,7 +861,7 @@ public:
 
                 // Get checkCode fields
                 Field * fields = checkCode->Fetch();
-                const char* code = fields[0].Get<std::string>().c_str();
+                std::string const code = fields[0].Get<std::string>();
                 uint32 itemId = fields[1].Get<uint32>();
                 uint32 quantity = fields[2].Get<uint32>();
                 uint32 gold = fields[3].Get<uint32>();
@@ -877,7 +877,7 @@ public:
                 if (isUnique == 1)
                 {
                     // Query for the unique code
-                    QueryResult uniqueRedeemed = WorldDatabase.Query("SELECT playerGUID, isUnique FROM lootcode_player WHERE code = '{}' AND isUnique = 1", (code));
+                    QueryResult uniqueRedeemed = WorldDatabase.Query("SELECT playerGUID, isUnique FROM lootcode_player WHERE code = '{}' AND isUnique = 1", (code.cstr()));
 
                     // If any player has redeemed this unique code, deny the code
                     if (uniqueRedeemed)
@@ -896,7 +896,7 @@ public:
                 if (chargesUsed < charges)
                 {
                     // Add the entry to the database
-                    WorldDatabase.Query("INSERT INTO lootcode_player (code, playerGUID, playerName, isUnique) VALUES ('{}', {}, '{}', {});", (code), player->GetGUID().GetCounter(), player->GetName().c_str(), isUnique);
+                    WorldDatabase.Query("INSERT INTO lootcode_player (code, playerGUID, playerName, isUnique) VALUES ('{}', {}, '{}', {});", (code.cstr()), player->GetGUID().GetCounter(), player->GetName().c_str(), isUnique);
 
                     // Add Item to player inventory
                     if (itemId != 0)
