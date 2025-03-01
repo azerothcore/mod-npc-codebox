@@ -92,12 +92,12 @@ player.
 - This code and content is released under the [GNU AGPL v3](https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3).
 
 */
-#include "Player.h"
-#include "ScriptMgr.h"
-#include "Config.h"
-#include "ScriptedGossip.h"
 #include "Chat.h"
+#include "Config.h"
+#include "Player.h"
 #include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "ScriptMgr.h"
 
 enum Customization {
     CUSTOMIZE_FACTION = 1,
@@ -149,11 +149,14 @@ std::unordered_map<ObjectGuid, uint32> lootid;
 class CodeboxConfig : public WorldScript
 {
 public:
-    CodeboxConfig() : WorldScript("CodeboxConfig") { }
+    CodeboxConfig() : WorldScript("CodeboxConfig", {
+        WORLDHOOK_ON_BEFORE_CONFIG_LOAD
+    }) { }
 
     void OnBeforeConfigLoad(bool reload) override
     {
-        if (!reload) {
+        if (!reload)
+        {
             CodeboxAnnounceModule = sConfigMgr->GetOption<bool>("Codebox.Announce", true);
             CodeboxMessageTimer = sConfigMgr->GetOption<int>("Codebox.MessageTimer", 60000);
 
@@ -161,9 +164,7 @@ public:
             if (CodeboxMessageTimer != 0)
             {
                 if (CodeboxMessageTimer < 60000 || CodeboxMessageTimer > 300000)
-                {
                     CodeboxMessageTimer = 60000;
-                }
             }
         }
     }
@@ -174,15 +175,15 @@ class CodeboxAnnounce : public PlayerScript
 
 public:
 
-    CodeboxAnnounce() : PlayerScript("CodeboxAnnounce") {}
+    CodeboxAnnounce() : PlayerScript("CodeboxAnnounce", {
+        PLAYERHOOK_ON_LOGIN
+    }) {}
 
-    void OnLogin(Player* player)
+    void OnPlayerLogin(Player* player) override
     {
         // Announce Module
         if (CodeboxAnnounceModule)
-        {
             ChatHandler(player->GetSession()).SendSysMessage("This server is running the |cff4CFF00CodeboxNPC |rmodule.");
-        }
     }
 };
 
@@ -193,24 +194,20 @@ public:
 
     codebox_npc() : CreatureScript("codebox_npc") { }
 
-    bool OnGossipHello(Player* player, Creature* creature)
+    bool OnGossipHello(Player* player, Creature* creature) override
     {
         showInitialMenu(player, creature);
         return true;
     }
 
-    bool OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code)
+    bool OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code) override
     {
         if (sender != GOSSIP_SENDER_MAIN)
-        {
             return false;
-        }
 
         if (action == 1) {
             if (!code)
-            {
                 code = "";
-            }
 
             // Determine Loot
             getLoot(player, creature, code);
@@ -226,20 +223,20 @@ public:
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", that is not a valid code name.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 SendGossipMenuFor(player, CodeboxNPCID, creature->GetGUID());
                 return false;
             }
 
             // Check for a valid code
-            QueryResult checkCode = WorldDatabase.PQuery("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '%s'", (code));
+            QueryResult checkCode = WorldDatabase.Query("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '{}'", (code));
 
             if (checkCode)
             {
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", this code already exists.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 SendGossipMenuFor(player, CodeboxNPCID, creature->GetGUID());
             }
             else
@@ -267,32 +264,38 @@ public:
             showLootMenu(player, creature);
         }
 
-        if (action == 24) {
+        if (action == 24)
+        {
             AddLoot[guid].gold = charptouint(code);
             showLootMenu(player, creature);
         }
-        if (action == 26) {
+        if (action == 26)
+        {
             AddLoot[guid].charges = charptouint(code);
             showLootMenu(player, creature);
         }
-        if (action == 27) {
+        if (action == 27)
+        {
             AddLoot[guid].unique = charptouint(code);
             showLootMenu(player, creature);
         }
-        if (action == 40) {
+        if (action == 40)
+        {
             // Check for a valid code
-            QueryResult checkCode = WorldDatabase.PQuery("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '%s'", (code));
-            if (!checkCode) {
+            QueryResult checkCode = WorldDatabase.Query("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '{}'", (code));
+            if (!checkCode)
+            {
                 // No code match found in database
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", that is not a valid code.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                 showInitialMenu(player, creature);
                 return true;
             }
-            else {
+            else
+            {
                 snprintf(DelLoot[guid].loot, sizeof(DelLoot[guid].loot), "%s", code);
                 ClearGossipMenuFor(player);
                 AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "Delete Loot Code", GOSSIP_SENDER_MAIN, 41);
@@ -302,54 +305,63 @@ public:
             }
         }
 
-        if (action == 60) {
+        if (action == 60)
+        {
             if (!code || strcmp(code, " ") != -1)
             {
                 code = "";
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", that is not a valid code name.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 SendGossipMenuFor(player, CodeboxNPCID, creature->GetGUID());
                 return false;
             }
             // Check for a valid code
-            QueryResult checkCode = WorldDatabase.PQuery("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '%s'", (code));
+            QueryResult checkCode = WorldDatabase.Query("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '{}'", (code));
 
-            if (checkCode) {
+            if (checkCode)
+            {
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", this code already exists.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 SendGossipMenuFor(player, CodeboxNPCID, creature->GetGUID());
             }
-            else {
+            else
+            {
                 snprintf(ShowLoot[guid][editid[guid]].loot, sizeof(ShowLoot[guid][editid[guid]].loot), "%s", code);
                 showEditMenu(player, creature, editid[guid]);
             }
         }
 
-        if (action == 61) {
+        if (action == 61)
+        {
             ShowLoot[guid][editid[guid]].itemId = charptouint(code);
             showEditMenu(player, creature, editid[guid]);
         }
-        if (action == 62) {
+        if (action == 62)
+        {
             snprintf(ShowLoot[guid][editid[guid]].name, sizeof(ShowLoot[guid][editid[guid]].name), "%s", code);
             showEditMenu(player, creature, editid[guid]);
         }
-        if (action == 63) {
+        if (action == 63)
+        {
             ShowLoot[guid][editid[guid]].quantity = charptouint(code);
             showEditMenu(player, creature, editid[guid]);
         }
-        if (action == 64) {
+        if (action == 64)
+        {
             ShowLoot[guid][editid[guid]].gold = charptouint(code);
             showEditMenu(player, creature, editid[guid]);
         }
-        if (action == 66) {
+        if (action == 66)
+        {
             ShowLoot[guid][editid[guid]].charges = charptouint(code);
             showEditMenu(player, creature, editid[guid]);
         }
-        if (action == 67) {
+        if (action == 67)
+        {
             ShowLoot[guid][editid[guid]].unique = charptouint(code);
             showEditMenu(player, creature, editid[guid]);
         }
@@ -357,12 +369,10 @@ public:
         return true;
     }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
     {
         if (sender != GOSSIP_SENDER_MAIN)
-        {
             return false;
-        }
 
         ObjectGuid guid = player->GetGUID();
 
@@ -411,10 +421,10 @@ public:
         if (action == 28)
         {
             // Add the entry to the database
-            WorldDatabase.PQuery("INSERT INTO lootcode_items (code, itemId, name, quantity, gold, customize, charges, isUnique) VALUES ('%s', %u, '%s', %u, %u, %u, %u, %u);", AddLoot[guid].loot, AddLoot[guid].itemId, AddLoot[guid].name, AddLoot[guid].quantity, AddLoot[guid].gold, AddLoot[guid].customize, AddLoot[guid].charges, AddLoot[guid].unique);
+            WorldDatabase.Query("INSERT INTO lootcode_items (code, itemId, name, quantity, gold, customize, charges, isUnique) VALUES ('{}', {}, '{}', {}, {}, {}, {}, {});", AddLoot[guid].loot, AddLoot[guid].itemId, AddLoot[guid].name, AddLoot[guid].quantity, AddLoot[guid].gold, AddLoot[guid].customize, AddLoot[guid].charges, AddLoot[guid].unique);
             std::ostringstream messageCode;
             messageCode << "The lootcode " << AddLoot[guid].loot << " has been added in the database.";
-            creature->MonsterWhisper(messageCode.str().c_str(), player);
+            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
             initializeAddLoot(guid);
             showInitialMenu(player, creature);
         }
@@ -432,11 +442,11 @@ public:
         if (action == 41)
         {
             // Delete the entry from the database
-            WorldDatabase.PQuery("DELETE FROM lootcode_items WHERE  code = '%s';", DelLoot[guid].loot);
+            WorldDatabase.Query("DELETE FROM lootcode_items WHERE  code = '{}';", DelLoot[guid].loot);
             std::ostringstream messageCode;
             messageCode << "The lootcode " << DelLoot[guid].loot << " has been deleted from the database.";
             //messageCode << "The lootcode " << AddLoot[guid].loot << " has been deleted from the database.";
-            creature->MonsterWhisper(messageCode.str().c_str(), player);
+            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
             showInitialMenu(player, creature);
         }
         if (action == 42)
@@ -450,10 +460,10 @@ public:
             ClearGossipMenuFor(player);
             lootid[guid] = 0;
 
-            QueryResult getLoot = WorldDatabase.PQuery("SELECT * FROM lootcode_items LIMIT %u;", max_loot_results);
-            QueryResult count_results = WorldDatabase.PQuery("SELECT COUNT(id) FROM lootcode_items");
+            QueryResult getLoot = WorldDatabase.Query("SELECT * FROM lootcode_items LIMIT {};", max_loot_results);
+            QueryResult count_results = WorldDatabase.Query("SELECT COUNT(id) FROM lootcode_items");
             Field * fields_count = count_results->Fetch();
-            uint32 total_results = fields_count[0].GetUInt32();
+            uint32 total_results = fields_count[0].Get<uint32>();
 
             do
             {
@@ -463,7 +473,7 @@ public:
                     std::ostringstream messageCode;
                     messageCode << "Error: Code Not Found!";
                     player->PlayDirectSound(9638); // No
-                    creature->MonsterWhisper(messageCode.str().c_str(), player);
+                    creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                     creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                     showInitialMenu(player, creature);
                     return true;
@@ -471,15 +481,15 @@ public:
                 else
                 {
                     Field * fields = getLoot->Fetch();
-                    uint32 id = fields[0].GetUInt32();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].GetCString());
-                    ShowLoot[guid][id].itemId = fields[2].GetUInt32();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].GetCString());
-                    ShowLoot[guid][id].quantity = fields[4].GetUInt32();
-                    ShowLoot[guid][id].gold = fields[5].GetUInt32();
-                    ShowLoot[guid][id].customize = fields[6].GetUInt32();
-                    ShowLoot[guid][id].charges = fields[7].GetUInt32();
-                    ShowLoot[guid][id].unique = fields[8].GetUInt32();
+                    uint32 id = fields[0].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>().c_str());
+                    ShowLoot[guid][id].itemId = fields[2].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>().c_str());
+                    ShowLoot[guid][id].quantity = fields[4].Get<uint32>();
+                    ShowLoot[guid][id].gold = fields[5].Get<uint32>();
+                    ShowLoot[guid][id].customize = fields[6].Get<uint32>();
+                    ShowLoot[guid][id].charges = fields[7].Get<uint32>();
+                    ShowLoot[guid][id].unique = fields[8].Get<uint32>();
 
                     char message[1024] = "";
                     snprintf(message, 1024, "%u) [%s] %s", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
@@ -488,9 +498,7 @@ public:
             } while (getLoot->NextRow());
 
             if (total_results > max_loot_results)
-            {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Next", GOSSIP_SENDER_MAIN, 80);
-            }
 
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Close", GOSSIP_SENDER_MAIN, 82);
             SendGossipMenuFor(player, 601050, creature->GetGUID());
@@ -548,10 +556,10 @@ public:
         if (action == 70)
         {
             // Add the entry to the database
-            WorldDatabase.PQuery("UPDATE lootcode_items SET code='%s', itemId=%u, name='%s', quantity=%u, gold=%u, customize=%u, charges=%u, isUnique=%u WHERE  id=%u;", ShowLoot[guid][editid[guid]].loot, ShowLoot[guid][editid[guid]].itemId, ShowLoot[guid][editid[guid]].name, ShowLoot[guid][editid[guid]].quantity, ShowLoot[guid][editid[guid]].gold, ShowLoot[guid][editid[guid]].customize, ShowLoot[guid][editid[guid]].charges, ShowLoot[guid][editid[guid]].unique, editid[guid]);
+            WorldDatabase.Query("UPDATE lootcode_items SET code='{}', itemId={}, name='{}', quantity={}, gold={}, customize={}, charges={}, isUnique={} WHERE  id={};", ShowLoot[guid][editid[guid]].loot, ShowLoot[guid][editid[guid]].itemId, ShowLoot[guid][editid[guid]].name, ShowLoot[guid][editid[guid]].quantity, ShowLoot[guid][editid[guid]].gold, ShowLoot[guid][editid[guid]].customize, ShowLoot[guid][editid[guid]].charges, ShowLoot[guid][editid[guid]].unique, editid[guid]);
             std::ostringstream messageCode;
             messageCode << "The lootcode " << ShowLoot[guid][editid[guid]].loot << " edited.";
-            creature->MonsterWhisper(messageCode.str().c_str(), player);
+            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
             showInitialMenu(player, creature);
         }
 
@@ -565,10 +573,10 @@ public:
         {
             ClearGossipMenuFor(player);
             lootid[guid] += max_loot_results;
-            QueryResult getLoot = WorldDatabase.PQuery("SELECT * FROM lootcode_items LIMIT %u,%u;", lootid[guid], max_loot_results);
-            QueryResult count_results = WorldDatabase.PQuery("SELECT COUNT(id) FROM lootcode_items");
+            QueryResult getLoot = WorldDatabase.Query("SELECT * FROM lootcode_items LIMIT {},{};", lootid[guid], max_loot_results);
+            QueryResult count_results = WorldDatabase.Query("SELECT COUNT(id) FROM lootcode_items");
             Field * fields_count = count_results->Fetch();
-            uint32 total_results = fields_count[0].GetUInt32();
+            uint32 total_results = fields_count[0].Get<uint32>();
 
             do
             {
@@ -578,7 +586,7 @@ public:
                     std::ostringstream messageCode;
                     messageCode << "Error: Code Not Found!";
                     player->PlayDirectSound(9638); // No
-                    creature->MonsterWhisper(messageCode.str().c_str(), player);
+                    creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                     creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                     showInitialMenu(player, creature);
                     return true;
@@ -586,15 +594,15 @@ public:
                 else
                 {
                     Field * fields = getLoot->Fetch();
-                    uint32 id = fields[0].GetUInt32();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].GetCString());
-                    ShowLoot[guid][id].itemId = fields[2].GetUInt32();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].GetCString());
-                    ShowLoot[guid][id].quantity = fields[4].GetUInt32();
-                    ShowLoot[guid][id].gold = fields[5].GetUInt32();
-                    ShowLoot[guid][id].customize = fields[6].GetUInt32();
-                    ShowLoot[guid][id].charges = fields[7].GetUInt32();
-                    ShowLoot[guid][id].unique = fields[8].GetUInt32();
+                    uint32 id = fields[0].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>().c_str());
+                    ShowLoot[guid][id].itemId = fields[2].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>().c_str());
+                    ShowLoot[guid][id].quantity = fields[4].Get<uint32>();
+                    ShowLoot[guid][id].gold = fields[5].Get<uint32>();
+                    ShowLoot[guid][id].customize = fields[6].Get<uint32>();
+                    ShowLoot[guid][id].charges = fields[7].Get<uint32>();
+                    ShowLoot[guid][id].unique = fields[8].Get<uint32>();
 
                     char message[1024] = "";
                     snprintf(message, 1024, "%u) [%s] %s", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
@@ -603,14 +611,10 @@ public:
             } while (getLoot->NextRow());
 
             if (total_results - lootid[guid] > max_loot_results)
-            {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Next", GOSSIP_SENDER_MAIN, 80);
-            }
 
             if (lootid[guid] >= max_loot_results)
-            {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Back", GOSSIP_SENDER_MAIN, 81);
-            }
 
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Close", GOSSIP_SENDER_MAIN, 82);
             SendGossipMenuFor(player, 601050, creature->GetGUID());
@@ -620,10 +624,10 @@ public:
         {
             ClearGossipMenuFor(player);
             lootid[guid] -= max_loot_results;
-            QueryResult getLoot = WorldDatabase.PQuery("SELECT * FROM lootcode_items LIMIT %u,%u;", lootid[guid], max_loot_results);
-            QueryResult count_results = WorldDatabase.PQuery("SELECT COUNT(id) FROM lootcode_items");
+            QueryResult getLoot = WorldDatabase.Query("SELECT * FROM lootcode_items LIMIT {},{};", lootid[guid], max_loot_results);
+            QueryResult count_results = WorldDatabase.Query("SELECT COUNT(id) FROM lootcode_items");
             Field * fields_count = count_results->Fetch();
-            uint32 total_results = fields_count[0].GetUInt32();
+            uint32 total_results = fields_count[0].Get<uint32>();
 
             do
             {
@@ -633,7 +637,7 @@ public:
                     std::ostringstream messageCode;
                     messageCode << "Error: Code Not Found!";
                     player->PlayDirectSound(9638); // No
-                    creature->MonsterWhisper(messageCode.str().c_str(), player);
+                    creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                     creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                     showInitialMenu(player, creature);
                     return true;
@@ -641,15 +645,15 @@ public:
                 else
                 {
                     Field * fields = getLoot->Fetch();
-                    uint32 id = fields[0].GetUInt32();
-                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].GetCString());
-                    ShowLoot[guid][id].itemId = fields[2].GetUInt32();
-                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].GetCString());
-                    ShowLoot[guid][id].quantity = fields[4].GetUInt32();
-                    ShowLoot[guid][id].gold = fields[5].GetUInt32();
-                    ShowLoot[guid][id].customize = fields[6].GetUInt32();
-                    ShowLoot[guid][id].charges = fields[7].GetUInt32();
-                    ShowLoot[guid][id].unique = fields[8].GetUInt32();
+                    uint32 id = fields[0].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].loot, sizeof(ShowLoot[guid][id].loot), "%s", fields[1].Get<std::string>().c_str());
+                    ShowLoot[guid][id].itemId = fields[2].Get<uint32>();
+                    snprintf(ShowLoot[guid][id].name, sizeof(ShowLoot[guid][id].name), "%s", fields[3].Get<std::string>().c_str());
+                    ShowLoot[guid][id].quantity = fields[4].Get<uint32>();
+                    ShowLoot[guid][id].gold = fields[5].Get<uint32>();
+                    ShowLoot[guid][id].customize = fields[6].Get<uint32>();
+                    ShowLoot[guid][id].charges = fields[7].Get<uint32>();
+                    ShowLoot[guid][id].unique = fields[8].Get<uint32>();
 
                     char message[1024] = "";
                     snprintf(message, 1024, "%u) [%s] %s", id, ShowLoot[guid][id].loot, ShowLoot[guid][id].name);
@@ -658,23 +662,17 @@ public:
             } while (getLoot->NextRow());
 
             if (total_results - lootid[guid] > max_loot_results)
-            {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Next", GOSSIP_SENDER_MAIN, 80);
-            }
 
             if (lootid[guid] >= max_loot_results)
-            {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Back", GOSSIP_SENDER_MAIN, 81);
-            }
 
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Close", GOSSIP_SENDER_MAIN, 82);
             SendGossipMenuFor(player, 601050, creature->GetGUID());
         }
 
         if (action == 82)
-        {
             showInitialMenu(player, creature);
-        }
 
         if (action >= 100)
         {
@@ -809,9 +807,7 @@ public:
 
         // If GameMaster
         if (player->IsGameMaster())
-        {
             initializeAddLoot(player->GetGUID());
-        }
 
         std::string text = "Enter Loot Code then Press Accept";
         std::string add_loot_text = "Add A Loot Code?";
@@ -843,10 +839,10 @@ public:
     void getLoot(Player* player, Creature* creature, const char* code)
     {
         // Check for a valid code
-        QueryResult checkCode = WorldDatabase.PQuery("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '%s'", (code));
+        QueryResult checkCode = WorldDatabase.Query("SELECT code, itemId, quantity, gold, customize, charges, isUnique FROM lootcode_items WHERE code = '{}'", (code));
 
         // Check if player has redeemed the code
-        QueryResult getLoot = WorldDatabase.PQuery("SELECT playerGUID, count(code) AS chargesUsed FROM lootcode_player WHERE playerGUID like %u AND code = '%s'", player->GetGUID().GetCounter(), (code));
+        QueryResult getLoot = WorldDatabase.Query("SELECT playerGUID, count(code) AS chargesUsed FROM lootcode_player WHERE playerGUID like {} AND code = '{}'", player->GetGUID().GetCounter(), (code));
 
         do
         {
@@ -856,7 +852,7 @@ public:
                 std::ostringstream messageCode;
                 messageCode << "Sorry " << player->GetName() << ", that is not a valid code.";
                 player->PlayDirectSound(9638); // No
-                creature->MonsterWhisper(messageCode.str().c_str(), player);
+                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                 creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                 showInitialMenu(player, creature);
                 return;
@@ -865,23 +861,23 @@ public:
 
                 // Get checkCode fields
                 Field * fields = checkCode->Fetch();
-                const char* code = fields[0].GetCString();
-                uint32 itemId = fields[1].GetUInt32();
-                uint32 quantity = fields[2].GetUInt32();
-                uint32 gold = fields[3].GetUInt32();
-                uint32 customize = fields[4].GetUInt32();
-                uint32 charges = fields[5].GetUInt32();
-                uint32 isUnique = fields[6].GetUInt32();
+                std::string const code = fields[0].Get<std::string>();
+                uint32 itemId = fields[1].Get<uint32>();
+                uint32 quantity = fields[2].Get<uint32>();
+                uint32 gold = fields[3].Get<uint32>();
+                uint32 customize = fields[4].Get<uint32>();
+                uint32 charges = fields[5].Get<uint32>();
+                uint32 isUnique = fields[6].Get<uint32>();
 
                 // Get getLoot fields
                 Field * fields2 = getLoot->Fetch();
-                uint32 chargesUsed = fields2[1].GetUInt32();
+                uint32 chargesUsed = fields2[1].Get<uint32>();
 
                 // If the code is unqiue, check to see if anyone has already used it.
                 if (isUnique == 1)
                 {
                     // Query for the unique code
-                    QueryResult uniqueRedeemed = WorldDatabase.PQuery("SELECT playerGUID, isUnique FROM lootcode_player WHERE code = '%s' AND isUnique = 1", (code));
+                    QueryResult uniqueRedeemed = WorldDatabase.Query("SELECT playerGUID, isUnique FROM lootcode_player WHERE code = '{}' AND isUnique = 1", (code.c_str()));
 
                     // If any player has redeemed this unique code, deny the code
                     if (uniqueRedeemed)
@@ -889,7 +885,7 @@ public:
                         std::ostringstream messageCode;
                         messageCode << "Sorry " << player->GetName() << ", This unique code has already been redeemed.";
                         player->PlayDirectSound(9638); // No
-                        creature->MonsterWhisper(messageCode.str().c_str(), player);
+                        creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                         creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                         showInitialMenu(player, creature);
                         return;
@@ -900,19 +896,15 @@ public:
                 if (chargesUsed < charges)
                 {
                     // Add the entry to the database
-                    WorldDatabase.PQuery("INSERT INTO lootcode_player (code, playerGUID, playerName, isUnique) VALUES ('%s', %u, '%s', %u);", (code), player->GetGUID().GetCounter(), player->GetName().c_str(), isUnique);
+                    WorldDatabase.Query("INSERT INTO lootcode_player (code, playerGUID, playerName, isUnique) VALUES ('{}', {}, '{}', {});", (code.c_str()), player->GetGUID().GetCounter(), player->GetName().c_str(), isUnique);
 
                     // Add Item to player inventory
                     if (itemId != 0)
-                    {
                         player->AddItem(itemId, quantity);
-                    }
 
                     // Add Gold to player inventory
                     if (gold != 0)
-                    {
                         player->ModifyMoney(gold * 10000);
-                    }
 
                     // Customize Character
                     if (customize != 0)
@@ -926,20 +918,18 @@ public:
 
                             auto* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
 
-                            stmt->setUInt16(0, uint16(AT_LOGIN_CHANGE_FACTION));
+                            stmt->SetData(0, uint16(AT_LOGIN_CHANGE_FACTION));
                             if (target)
                             {
                                 target->SetAtLoginFlag(AT_LOGIN_CHANGE_FACTION);
-                                stmt->setUInt32(1, target->GetGUID().GetCounter());
+                                stmt->SetData(1, target->GetGUID().GetCounter());
                             }
                             else
-                            {
-                                stmt->setUInt32(1, targetGuid.GetCounter());
-                            }
+                                stmt->SetData(1, targetGuid.GetCounter());
 
                             std::ostringstream messageCode;
                             messageCode << "You can change your faction on your next login " << target->GetName() << ".";
-                            creature->MonsterWhisper(messageCode.str().c_str(), target);
+                            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, target);
                             CharacterDatabase.Execute(stmt);
                         }
 
@@ -952,20 +942,18 @@ public:
 
                             auto* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
 
-                            stmt->setUInt16(0, uint16(AT_LOGIN_CHANGE_RACE));
+                            stmt->SetData(0, uint16(AT_LOGIN_CHANGE_RACE));
                             if (target)
                             {
                                 target->SetAtLoginFlag(AT_LOGIN_CHANGE_RACE);
-                                stmt->setUInt32(1, target->GetGUID().GetCounter());
+                                stmt->SetData(1, target->GetGUID().GetCounter());
                             }
                             else
-                            {
-                                stmt->setUInt32(1, targetGuid.GetCounter());
-                            }
+                                stmt->SetData(1, targetGuid.GetCounter());
 
                             std::ostringstream messageCode;
                             messageCode << "You can change your race on your next login " << target->GetName() << ".";
-                            creature->MonsterWhisper(messageCode.str().c_str(), target);
+                            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, target);
                             CharacterDatabase.Execute(stmt);
                         }
 
@@ -977,20 +965,18 @@ public:
                             std::string targetName = target->GetName();
 
                             if (target)
-                            {
                                 target->SetAtLoginFlag(AT_LOGIN_RENAME);
-                            }
                             else
                             {
                                 auto* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
-                                stmt->setUInt16(0, uint16(AT_LOGIN_RENAME));
-                                stmt->setUInt32(1, targetGuid.GetCounter());
+                                stmt->SetData(0, uint16(AT_LOGIN_RENAME));
+                                stmt->SetData(1, targetGuid.GetCounter());
                                 CharacterDatabase.Execute(stmt);
                             }
 
                             std::ostringstream messageCode;
                             messageCode << "You can rename your character on your next login " << target->GetName() << ".";
-                            creature->MonsterWhisper(messageCode.str().c_str(), target);
+                            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, target);
                         }
                     }
                 }
@@ -1000,7 +986,7 @@ public:
                     std::ostringstream messageCode;
                     messageCode << "Sorry, " << player->GetName() << ". you've reached the limit on this code.";
                     player->PlayDirectSound(9638); // No
-                    creature->MonsterWhisper(messageCode.str().c_str(), player);
+                    creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
                     creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                     showInitialMenu(player, creature);
                     return;
@@ -1012,7 +998,7 @@ public:
         // Code successfully redeemed
         std::ostringstream messageCode;
         messageCode << "Your code has been redeemed " << player->GetName() << ". Have a nice day!";
-        creature->MonsterWhisper(messageCode.str().c_str(), player);
+        creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
         creature->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
         CloseGossipMenuFor(player);
     }
@@ -1026,13 +1012,13 @@ public:
         uint32 MessageTimer;
 
         // Called once when client is loaded
-        void Reset()
+        void Reset() override
         {
             MessageTimer = urand(CodeboxMessageTimer, 300000); // 1-5 minutes
         }
 
         // Called at World update tick
-        void UpdateAI(const uint32 diff)
+        void UpdateAI(const uint32 diff) override
         {
             // If Enabled
             if (CodeboxMessageTimer != 0)
@@ -1047,41 +1033,42 @@ public:
                     {
                     case 1:
                     {
-                        me->MonsterSay("Do you have a code to redeem? Step right up!", LANG_UNIVERSAL, NULL);
+                        me->Say("Do you have a code to redeem? Step right up!", LANG_UNIVERSAL);
                         me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                         MessageTimer = urand(CodeboxMessageTimer, 180000);
                         break;
                     }
                     case 2:
                     {
-                        me->MonsterSay("Did you receive a loot code in the mail? I can help.", LANG_UNIVERSAL, NULL);
+                        me->Say("Did you receive a loot code in the mail? I can help.", LANG_UNIVERSAL);
                         me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                         MessageTimer = urand(CodeboxMessageTimer, 180000);
                         break;
                     }
                     case 3:
                     {
-                        me->MonsterSay("Did you find a secret code? I can help.", LANG_UNIVERSAL, NULL);
+                        me->Say("Did you find a secret code? I can help.", LANG_UNIVERSAL);
                         me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                         MessageTimer = urand(CodeboxMessageTimer, 180000);
                         break;
                     }
                     default:
                     {
-                        me->MonsterSay("Do you have a code to redeem? Step right up!", LANG_UNIVERSAL, NULL);
+                        me->Say("Do you have a code to redeem? Step right up!", LANG_UNIVERSAL);
                         me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                         MessageTimer = urand(CodeboxMessageTimer, 180000);
                         break;
                     }
                     }
                 }
-                else { MessageTimer -= diff; }
+                else
+                    MessageTimer -= diff;
             }
         };
     };
 
     // CREATURE AI
-    CreatureAI * GetAI(Creature * creature) const
+    CreatureAI * GetAI(Creature * creature) const override
     {
         return new Codebox_PassiveAI(creature);
     }
