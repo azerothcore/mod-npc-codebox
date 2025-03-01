@@ -23,7 +23,7 @@ SET
 @Type 		:= 7,
 @TypeFlags 	:= 138936390,
 @FlagsExtra := 2,
-@AIName		:= "SmartAI",
+@AIName		:= "",
 @Script 	:= "codebox_npc";
 
 -- NPC
