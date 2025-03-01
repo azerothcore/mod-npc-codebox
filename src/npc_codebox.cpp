@@ -1033,28 +1033,28 @@ public:
                     {
                     case 1:
                     {
-                        me->MonsterSay("Do you have a code to redeem? Step right up!", LANG_UNIVERSAL, NULL);
+                        me->Say("Do you have a code to redeem? Step right up!", LANG_UNIVERSAL);
                         me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                         MessageTimer = urand(CodeboxMessageTimer, 180000);
                         break;
                     }
                     case 2:
                     {
-                        me->MonsterSay("Did you receive a loot code in the mail? I can help.", LANG_UNIVERSAL, NULL);
+                        me->Say("Did you receive a loot code in the mail? I can help.", LANG_UNIVERSAL);
                         me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                         MessageTimer = urand(CodeboxMessageTimer, 180000);
                         break;
                     }
                     case 3:
                     {
-                        me->MonsterSay("Did you find a secret code? I can help.", LANG_UNIVERSAL, NULL);
+                        me->Say("Did you find a secret code? I can help.", LANG_UNIVERSAL);
                         me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                         MessageTimer = urand(CodeboxMessageTimer, 180000);
                         break;
                     }
                     default:
                     {
-                        me->MonsterSay("Do you have a code to redeem? Step right up!", LANG_UNIVERSAL, NULL);
+                        me->Say("Do you have a code to redeem? Step right up!", LANG_UNIVERSAL);
                         me->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
                         MessageTimer = urand(CodeboxMessageTimer, 180000);
                         break;
